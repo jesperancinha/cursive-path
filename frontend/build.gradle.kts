@@ -1,5 +1,7 @@
 plugins {
     kotlin("multiplatform")
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 kotlin {
@@ -13,8 +15,8 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation(project(":shared"))
-                implementation("org.jetbrains.compose.web:web-core:1.6.10")
-                implementation("org.jetbrains.compose.runtime:runtime:1.6.10")
+                implementation(compose.html.core)
+                implementation(compose.runtime)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
             }
         }
