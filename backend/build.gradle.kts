@@ -4,6 +4,10 @@ plugins {
     application
 }
 
+kotlin {
+    jvmToolchain(23)
+}
+
 application {
     mainClass.set("BackendKt")
 }
