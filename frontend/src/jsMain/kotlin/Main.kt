@@ -55,7 +55,7 @@ fun App() {
 }
 
 suspend fun translateWord(text: String): String {
-    val response = kotlinx.browser.window.fetch("http://localhost:8080/translate",
+    val response = kotlinx.browser.window.fetch("http://localhost:8000/translate",
         json(
             "method" to "POST",
             "headers" to json("Content-Type" to "application/json"),
