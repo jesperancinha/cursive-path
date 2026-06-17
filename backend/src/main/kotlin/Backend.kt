@@ -42,23 +42,28 @@ fun Application.module() {
 
             val text = req["text"] ?: ""
             val target = req["target"] ?: "nl"
-
-            val response: String = client.post("http://localhost:5000/translate") {
-                contentType(ContentType.Application.Json)
-                setBody(
-                    mapOf(
-                        "q" to text,
-                        "source" to "en",
-                        "target" to target,
-                        "format" to "text"
+            runCatching {
+                val response: String = client.post("http://localhost:5000/translate") {
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        mapOf(
+                            "q" to text,
+                            "source" to "en",
+                            "target" to target,
+                            "format" to "text"
+                        )
                     )
-                )
-            }.bodyAsText()
+                }.bodyAsText()
+                val json = Json.parseToJsonElement(response).jsonObject
+                val translated = json["translatedText"]?.jsonPrimitive?.content ?: ""
 
-            val json = Json.parseToJsonElement(response).jsonObject
-            val translated = json["translatedText"]?.jsonPrimitive?.content ?: ""
+                call.respond(mapOf("translatedText" to translated))
+            }.onFailure {
+                println("Error during translation: ${it.message}")
+                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Translation failed"))
+            }
 
-            call.respond(mapOf("translatedText" to translated))
+
         }
     }
 }

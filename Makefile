@@ -9,7 +9,7 @@ build:
 # --- Frontend ---
 
 # Start the frontend development server
-run:
+run-frontend:
 	./gradlew :frontend:jsBrowserDevelopmentRun
 
 # Start the frontend development server in background
@@ -59,3 +59,4 @@ stop-backend:
 # Stop both services
 stop-all: stop-frontend stop-backend
 start-all: start-frontend start-backend
+start-all-debug-backend: start-frontend run-backend
