@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  libretranslate:
+    image: libretranslate/libretranslate
+    ports:
+      - "5000:5000"
+    environment:
+      - LT_DISABLE_WEB_UI=true
