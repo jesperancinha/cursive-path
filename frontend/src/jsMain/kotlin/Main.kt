@@ -59,7 +59,7 @@ suspend fun translateWord(text: String): String {
         json(
             "method" to "POST",
             "headers" to json("Content-Type" to "application/json"),
-            "body" to JSON.stringify(json("text" to text, "target" to "nl"))
+            "body" to JSON.stringify(json("text" to text, "target" to "he"))
         ).unsafeCast<org.w3c.fetch.RequestInit>()
     ).await()
 

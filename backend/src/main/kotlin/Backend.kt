@@ -4,7 +4,9 @@ import io.ktor.server.netty.*
 import io.ktor.server.response.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
-import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation as ClientContentNegotiation
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation as ServerContentNegotiation
+import io.ktor.serialization.kotlinx.json.json as jsonConfig
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.client.*
@@ -24,8 +26,8 @@ fun main() {
 
 fun Application.module() {
 
-    install(ContentNegotiation) {
-        json(Json { ignoreUnknownKeys = true })
+    install(ServerContentNegotiation) {
+        jsonConfig(Json { ignoreUnknownKeys = true })
     }
     install(CORS) {
         anyHost()
@@ -34,7 +36,11 @@ fun Application.module() {
         allowMethod(HttpMethod.Post)
     }
 
-    val client = HttpClient(CIO)
+    val client = HttpClient(CIO) {
+        install(ClientContentNegotiation) {
+            jsonConfig(Json { ignoreUnknownKeys = true })
+        }
+    }
 
     routing {
         post("/translate") {
