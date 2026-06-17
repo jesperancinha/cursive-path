@@ -42,6 +42,8 @@ fun Application.module() {
         }
     }
 
+    val ltUrl = System.getenv("LT_URL") ?: "http://localhost:5000"
+    println(ltUrl)
     routing {
         post("/translate") {
             val req = call.receive<Map<String, String>>()
@@ -49,7 +51,7 @@ fun Application.module() {
             val text = req["text"] ?: ""
             val target = req["target"] ?: "nl"
             runCatching {
-                val response: String = client.post("http://localhost:5000/translate") {
+                val response: String = client.post("$ltUrl/translate") {
                     contentType(ContentType.Application.Json)
                     setBody(
                         mapOf(
@@ -66,6 +68,7 @@ fun Application.module() {
                 call.respond(mapOf("translatedText" to translated))
             }.onFailure {
                 println("Error during translation: ${it.message}")
+                println("Error during translation: ${it.stackTraceToString()}")
                 call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Translation failed"))
             }
 

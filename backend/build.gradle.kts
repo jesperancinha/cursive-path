@@ -12,6 +12,15 @@ application {
     mainClass.set("BackendKt")
 }
 
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "BackendKt"
+    }
+    val dependencies = configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
+    from(dependencies)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 dependencies {
     implementation(project(":shared"))
 
