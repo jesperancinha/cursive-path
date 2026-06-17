@@ -62,3 +62,6 @@ start-all: start-frontend start-backend
 start-all-debug-backend: start-frontend run-backend
 dcup: build
 	docker-compose up -d --build
+
+dcup-translate: build
+	docker-compose up -d libretranslate --build

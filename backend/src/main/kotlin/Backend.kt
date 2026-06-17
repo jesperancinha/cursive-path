@@ -43,7 +43,7 @@ fun Application.module() {
     }
 
     val ltUrl = System.getenv("LT_URL") ?: "http://localhost:5000"
-    println(ltUrl)
+    println("Using LibreTranslate URL: $ltUrl")
     routing {
         post("/translate") {
             val req = call.receive<Map<String, String>>()
@@ -68,7 +68,7 @@ fun Application.module() {
                 call.respond(mapOf("translatedText" to translated))
             }.onFailure {
                 println("Error during translation: ${it.message}")
-                println("Error during translation: ${it.stackTraceToString()}")
+                println(it.stackTraceToString())
                 call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Translation failed"))
             }
 
