@@ -2,6 +2,7 @@ import androidx.compose.runtime.*
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 import org.jetbrains.compose.web.attributes.*
+import org.jetbrains.compose.web.css.*
 import kotlinx.coroutines.*
 
 import kotlin.js.json
@@ -17,13 +18,37 @@ fun App() {
 
     var input by remember { mutableStateOf("") }
     var translation by remember { mutableStateOf("") }
+    var cursiveImages by remember { mutableStateOf<List<String>?>(null) }
 
     val scope = rememberCoroutineScope()
+
+    suspend fun checkCursive(word: String) {
+        if (word.isEmpty()) {
+            cursiveImages = null
+            return
+        }
+        val images = word.map { "${it.code}.png" }
+        var allExist = true
+        for (img in images) {
+            try {
+                val resp = kotlinx.browser.window.fetch("characters/$img", json("method" to "HEAD").unsafeCast<org.w3c.fetch.RequestInit>()).await()
+                if (!resp.ok) {
+                    allExist = false
+                    break
+                }
+            } catch (e: Exception) {
+                allExist = false
+                break
+            }
+        }
+        cursiveImages = if (allExist) images else null
+    }
 
     fun translate() {
         scope.launch {
             val result = translateWord(input)
             translation = result
+            checkCursive(result)
         }
     }
 
@@ -51,6 +76,25 @@ fun App() {
 
         H3 { Text("Result") }
         P { Text(translation) }
+
+        cursiveImages?.let { images ->
+            Div({
+                style {
+                    display(DisplayStyle.Flex)
+                    flexDirection(FlexDirection.Row)
+                    flexWrap(FlexWrap.Wrap)
+                }
+            }) {
+                images.forEach { img ->
+                    Img(src = "characters/$img", alt = img) {
+                        style {
+                            width(50.px)
+                            height(50.px)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
