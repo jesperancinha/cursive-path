@@ -2,6 +2,11 @@
 
 .PHONY: run build clean run-backend start-backend stop-backend start-frontend stop-frontend stop-all
 
+# Build the production bundle
+build:
+	./gradlew :frontend:jsBrowserProductionWebpack
+	./gradlew :backend
+
 # --- Frontend ---
 
 # Start the frontend development server
@@ -23,9 +28,6 @@ stop-frontend:
 		echo "frontend.pid not found."; \
 	fi
 
-# Build the frontend production bundle
-build:
-	./gradlew :frontend:jsBrowserProductionWebpack
 
 # Clean the frontend build artifacts
 clean:

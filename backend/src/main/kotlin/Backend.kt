@@ -5,6 +5,7 @@ import io.ktor.server.response.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -25,6 +26,12 @@ fun Application.module() {
 
     install(ContentNegotiation) {
         json(Json { ignoreUnknownKeys = true })
+    }
+    install(CORS) {
+        anyHost()
+        allowHeader(HttpHeaders.ContentType)
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Post)
     }
 
     val client = HttpClient(CIO)
