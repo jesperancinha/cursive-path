@@ -27,7 +27,11 @@ fun App() {
             cursiveImages = null
             return
         }
-        val images = word.map { "${it.code}.png" }
+        val images = word.map { 
+            val hex = it.code.toString(16).uppercase()
+            val paddedHex = hex.padStart(4, '0')
+            "U$paddedHex.png"
+        }
         var allExist = true
         for (img in images) {
             try {
@@ -78,20 +82,17 @@ fun App() {
         P { Text(translation) }
 
         cursiveImages?.let { images ->
+            val isRtl = translation.any { it.code in 0x0590..0x08FF } // Hebrew, Arabic, etc.
             Div({
                 style {
                     display(DisplayStyle.Flex)
-                    flexDirection(FlexDirection.Row)
+                    flexDirection(if (isRtl) FlexDirection.RowReverse else FlexDirection.Row)
                     flexWrap(FlexWrap.Wrap)
+                    justifyContent(if (isRtl) JustifyContent.FlexEnd else JustifyContent.FlexStart)
                 }
             }) {
                 images.forEach { img ->
-                    Img(src = "characters/$img", alt = img) {
-                        style {
-                            width(50.px)
-                            height(50.px)
-                        }
-                    }
+                    Img(src = "characters/$img", alt = img)
                 }
             }
         }
