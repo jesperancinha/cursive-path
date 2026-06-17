@@ -4,9 +4,8 @@
 
 # Build the production bundle
 build:
+	./gradlew :backend:build
 	./gradlew :frontend:jsBrowserProductionWebpack
-	./gradlew :backend
-
 # --- Frontend ---
 
 # Start the frontend development server
