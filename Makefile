@@ -65,7 +65,7 @@ dcup: build
 	sudo chown -R $(USER):$(USER) libretranslate_data
 	docker-compose up -d libretranslate --build
 	./wait.sh
-	docker-compose up -d --build
+	docker-compose up -d --build --force-recreate
 dcup-translate: build
 dcup-local: build start-all
 	docker run --rm -it -p 5000:5000 libretranslate/libretranslate
