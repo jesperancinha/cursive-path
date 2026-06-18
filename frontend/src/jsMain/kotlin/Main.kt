@@ -101,14 +101,24 @@ fun App() {
 
 suspend fun translateWord(text: String): String {
     val host = kotlinx.browser.window.location.hostname
-    val response = kotlinx.browser.window.fetch("http://$host:8000/translate",
-        json(
-            "method" to "POST",
-            "headers" to json("Content-Type" to "application/json"),
-            "body" to JSON.stringify(json("text" to text, "target" to "he"))
-        ).unsafeCast<org.w3c.fetch.RequestInit>()
-    ).await()
+    try {
+        val response = kotlinx.browser.window.fetch("http://$host:8000/translate",
+            json(
+                "method" to "POST",
+                "headers" to json("Content-Type" to "application/json"),
+                "body" to JSON.stringify(json("text" to text, "target" to "he"))
+            ).unsafeCast<org.w3c.fetch.RequestInit>()
+        ).await()
 
-    val json = response.text().await()
-    return JSON.parse<dynamic>(json).translatedText as String
+        val textResponse = response.text().await()
+        val json = JSON.parse<dynamic>(textResponse)
+        if (response.ok) {
+            return json.translatedText as String
+        } else {
+            val error = json.error ?: "Unknown error"
+            return "Error: $error (Status: ${response.status})"
+        }
+    } catch (e: Exception) {
+        return "Error: ${e.message}"
+    }
 }
