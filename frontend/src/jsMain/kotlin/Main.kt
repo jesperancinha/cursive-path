@@ -13,12 +13,14 @@ fun main() {
     }
 }
 
+
 @Composable
 fun App() {
 
     var input by remember { mutableStateOf("") }
     var translation by remember { mutableStateOf("") }
     var cursiveImages by remember { mutableStateOf<List<String>?>(null) }
+    var letterHeight by remember { mutableStateOf(50) }
 
     val scope = rememberCoroutineScope()
 
@@ -92,6 +94,37 @@ fun App() {
 
         Hr()
 
+        Div({
+            style {
+                marginTop(10.px)
+                marginBottom(10.px)
+            }
+        }) {
+            Label(forId = "height-slider") {
+                Text("Letter Height: ")
+            }
+            Input(type = InputType.Range) {
+                id("height-slider")
+                min("5")
+                max(MAX_CHARACTER_HEIGHT)
+                value(letterHeight)
+                onInput { letterHeight = it.value?.toInt() ?: 50 }
+            }
+            Input(type = InputType.Number) {
+                style {
+                    marginLeft(10.px)
+                    width(50.px)
+                }
+                min("5")
+                max(MAX_CHARACTER_HEIGHT)
+                value(letterHeight)
+                onInput { letterHeight = it.value?.toInt() ?: 50 }
+            }
+            Text(" px")
+        }
+
+        Hr()
+
         H3 { Text("Result") }
         P { Text(translation) }
 
@@ -106,7 +139,11 @@ fun App() {
                 }
             }) {
                 images.forEach { img ->
-                    Img(src = "characters/$img", alt = img)
+                    Img(src = "characters/$img", alt = img, attrs = {
+                        style {
+                            height(letterHeight.px)
+                        }
+                    })
                 }
             }
         }
@@ -136,3 +173,5 @@ suspend fun translateWord(text: String): String {
         return "Error: ${e.message}"
     }
 }
+
+private const val MAX_CHARACTER_HEIGHT = "1000"
