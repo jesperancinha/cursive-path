@@ -27,3 +27,5 @@ Note: This file tracks the history of project builds and configurations.
 ---
 - can you add a control to the webpage where we can regulat from 5 to 100 the height of the letters shown? I would like it to be a slider control with the ability to input manually as well
 ---
+- on the basis of current filenames for the images in the characters folder, can you make a CSV file, where on the left, you have the name of the file, and on the right a percentage, which by default will be 100 percent. This percentage means the height of the letter when being rendered to the GUI. For example, if we configure the height to be 50 pixels and the percentage is 125 for a specific letter, then instead of 50 pixels, you should render it with 50 times 1.25 = 62.5 pixels.
+---

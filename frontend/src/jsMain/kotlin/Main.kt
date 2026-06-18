@@ -21,6 +21,7 @@ fun App() {
     var translation by remember { mutableStateOf("") }
     var cursiveImages by remember { mutableStateOf<List<String>?>(null) }
     var letterHeight by remember { mutableStateOf(50) }
+    var heightPercentages by remember { mutableStateOf<Map<String, Double>>(emptyMap()) }
 
     val scope = rememberCoroutineScope()
 
@@ -69,6 +70,22 @@ fun App() {
         if (!wordParam.isNullOrEmpty()) {
             input = wordParam
             translate(wordParam)
+        }
+
+        try {
+            val resp = kotlinx.browser.window.fetch("character_heights.csv").await()
+            if (resp.ok) {
+                val text = resp.text().await()
+                val map = text.split("\n")
+                    .filter { it.contains(",") }
+                    .associate {
+                        val parts = it.split(",")
+                        parts[0].trim() to (parts[1].trim().toDoubleOrNull() ?: 100.0)
+                    }
+                heightPercentages = map
+            }
+        } catch (e: Exception) {
+            console.error("Failed to load character heights: ${e.message}")
         }
     }
 
@@ -139,9 +156,11 @@ fun App() {
                 }
             }) {
                 images.forEach { img ->
+                    val percentage = heightPercentages[img] ?: 100.0
+                    val calculatedHeight = letterHeight * (percentage / 100.0)
                     Img(src = "characters/$img", alt = img, attrs = {
                         style {
-                            height(letterHeight.px)
+                            height(calculatedHeight.px)
                         }
                     })
                 }
