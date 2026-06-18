@@ -61,6 +61,8 @@ stop-all: stop-frontend stop-backend
 start-all: start-frontend start-backend
 start-all-debug-backend: start-frontend run-backend
 dcup: build
+	mkdir -p libretranslate_data
+	sudo chown -R $USER:$USER libretranslate-data
 	docker-compose up --build
 dcup-translate: build
 	docker-compose up -d libretranslate --build

@@ -4,6 +4,7 @@ volumes:
 services:
   libretranslate:
     image: libretranslate/libretranslate
+    user: root
     ports:
       - "5000:5000"
     expose:
@@ -13,15 +14,15 @@ services:
 #      - LT_REQ_LIMIT=300
 #      - LT_DEBUG=1
 #      - LT_DISABLE_FILESYSTEM_LOADING=false
-#    volumes:
-#      - ./libretranslate_data:/home/libretranslate/.local/share/argos-translate
+    volumes:
+      - ./libretranslate_data:/home/libretranslate/.local/share/argos-translate
     stdin_open: true
     tty: true
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'grep -q \"Starting gunicorn\" /proc/1/fd/1 2>/dev/null || grep -q \"Starting gunicorn\" /proc/1/fd/2 2>/dev/null'"]
       interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 200
 
   backend:
     build:
