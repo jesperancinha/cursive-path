@@ -48,11 +48,25 @@ fun App() {
         cursiveImages = if (allExist) images else null
     }
 
-    fun translate() {
+    fun translate(wordToTranslate: String) {
         scope.launch {
-            val result = translateWord(input)
+            val result = translateWord(wordToTranslate)
             translation = result
             checkCursive(result)
+
+            val url = kotlinx.browser.window.location.let {
+                "${it.origin}${it.pathname}?word=${js("encodeURIComponent")(wordToTranslate)}"
+            }
+            kotlinx.browser.window.history.pushState(null, "", url)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val params = org.w3c.dom.url.URLSearchParams(kotlinx.browser.window.location.search)
+        val wordParam = params.get("word")
+        if (!wordParam.isNullOrEmpty()) {
+            input = wordParam
+            translate(wordParam)
         }
     }
 
@@ -65,13 +79,13 @@ fun App() {
 
             onKeyDown {
                 if (it.key == "Enter") {
-                    translate()
+                    translate(input)
                 }
             }
         }
 
         Button(attrs = {
-            onClick { translate() }
+            onClick { translate(input) }
         }) {
             Text("Translate")
         }

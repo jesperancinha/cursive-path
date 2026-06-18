@@ -22,3 +22,6 @@ Note: This file tracks the history of project builds and configurations.
   at org.jetbrains.kotlin.cli.jvm.modules.JavaVersionUtilsKt.isAtLeastJava9(javaVersionUtils.kt:11)"
 ---
 - can you make sure that in the docker-compose file, the backend and frontend only start when the locks of the libretranslate image show the text "Starting gunicorn"?
+---
+- can you make sure the url gets updated in a way that the input parameter is given as a query param in the get request. For example that we can go directly to the word by using http://localhost:8080?word=cat. So everytime a search is requested, the url should be updated and if we use the url, the word should be filled in the input field and the text completely updated.
+---
