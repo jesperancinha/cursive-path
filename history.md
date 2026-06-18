@@ -20,3 +20,5 @@ Note: This file tracks the history of project builds and configurations.
   at org.jetbrains.kotlin.com.intellij.util.lang.JavaVersion.parse(JavaVersion.java:307)
   at org.jetbrains.kotlin.com.intellij.util.lang.JavaVersion.current(JavaVersion.java:176)
   at org.jetbrains.kotlin.cli.jvm.modules.JavaVersionUtilsKt.isAtLeastJava9(javaVersionUtils.kt:11)"
+---
+- can you make sure that in the docker-compose file, the backend and frontend only start when the locks of the libretranslate image show the text "Starting gunicorn"?

@@ -17,6 +17,11 @@ services:
 #      - ./libretranslate_data:/home/libretranslate/.local/share/argos-translate
     stdin_open: true
     tty: true
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'grep -q \"Starting gunicorn\" /proc/1/fd/1 2>/dev/null || grep -q \"Starting gunicorn\" /proc/1/fd/2 2>/dev/null'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   backend:
     build:
@@ -26,7 +31,8 @@ services:
     environment:
       - LT_URL=http://libretranslate:5000
     depends_on:
-      - libretranslate
+      libretranslate:
+        condition: service_healthy
 
   frontend:
     build:
@@ -34,4 +40,5 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
