@@ -14,6 +14,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import com.hazelcast.core.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -42,6 +43,9 @@ fun Application.module() {
         }
     }
 
+    val hazelcastInstance: HazelcastInstance = Hazelcast.newHazelcastInstance()
+    val translationCache = hazelcastInstance.getMap<String, String>("translations")
+
     val ltUrl = System.getenv("LT_URL") ?: "http://localhost:5000"
     println("Using LibreTranslate URL: $ltUrl")
     routing {
@@ -50,13 +54,23 @@ fun Application.module() {
 
             val text = req["text"] ?: ""
             val target = req["target"] ?: "nl"
+            val source = "en"
+            val cacheKey = "$source:$target:$text"
+
+            val cachedResponse = translationCache[cacheKey]
+            if (cachedResponse != null) {
+                call.respond(mapOf("translatedText" to cachedResponse))
+                return@post
+            }
+
             runCatching {
+                println("Making a real request to LibreTranslate for text: $text")
                 val response = client.post("$ltUrl/translate") {
                     contentType(ContentType.Application.Json)
                     setBody(
                         mapOf(
                             "q" to text,
-                            "source" to "en",
+                            "source" to source,
                             "target" to target,
                             "format" to "text"
                         )
@@ -67,6 +81,7 @@ fun Application.module() {
                     val responseText = response.bodyAsText()
                     val json = Json.parseToJsonElement(responseText).jsonObject
                     val translated = json["translatedText"]?.jsonPrimitive?.content ?: ""
+                    translationCache[cacheKey] = translated
                     call.respond(mapOf("translatedText" to translated))
                 } else {
                     val errorBody = response.bodyAsText()
