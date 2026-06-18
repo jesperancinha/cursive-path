@@ -30,3 +30,4 @@ build
 yarn.lock
 libretranslate-data
 libretranslate_data
+logs
