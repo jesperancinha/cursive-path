@@ -1,9 +1,14 @@
+package org.jesperancinha.cursive.path
+
 import androidx.compose.runtime.*
+import kotlinx.browser.window
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 import org.jetbrains.compose.web.attributes.*
 import org.jetbrains.compose.web.css.*
 import kotlinx.coroutines.*
+import org.w3c.dom.url.URLSearchParams
+import org.w3c.fetch.RequestInit
 
 import kotlin.js.json
 
@@ -30,7 +35,7 @@ fun App() {
             cursiveImages = null
             return
         }
-        val images = word.map { 
+        val images = word.map {
             val hex = it.code.toString(16).uppercase()
             val paddedHex = hex.padStart(4, '0')
             "U$paddedHex.png"
@@ -38,7 +43,7 @@ fun App() {
         var allExist = true
         for (img in images) {
             try {
-                val resp = kotlinx.browser.window.fetch("characters/$img", json("method" to "HEAD").unsafeCast<org.w3c.fetch.RequestInit>()).await()
+                val resp = window.fetch("characters/$img", json("method" to "HEAD").unsafeCast<RequestInit>()).await()
                 if (!resp.ok) {
                     allExist = false
                     break
@@ -57,15 +62,15 @@ fun App() {
             translation = result
             checkCursive(result)
 
-            val url = kotlinx.browser.window.location.let {
+            val url = window.location.let {
                 "${it.origin}${it.pathname}?word=${js("encodeURIComponent")(wordToTranslate)}"
             }
-            kotlinx.browser.window.history.pushState(null, "", url)
+            window.history.pushState(null, "", url)
         }
     }
 
     LaunchedEffect(Unit) {
-        val params = org.w3c.dom.url.URLSearchParams(kotlinx.browser.window.location.search)
+        val params = URLSearchParams(window.location.search)
         val wordParam = params.get("word")
         if (!wordParam.isNullOrEmpty()) {
             input = wordParam
@@ -73,7 +78,7 @@ fun App() {
         }
 
         try {
-            val resp = kotlinx.browser.window.fetch("character_heights.csv").await()
+            val resp = window.fetch("character_heights.csv").await()
             if (resp.ok) {
                 val text = resp.text().await()
                 val map = text.split("\n")
@@ -170,14 +175,15 @@ fun App() {
 }
 
 suspend fun translateWord(text: String): String {
-    val host = kotlinx.browser.window.location.hostname
+    val host = window.location.hostname
     try {
-        val response = kotlinx.browser.window.fetch("http://$host:8000/translate",
+        val response = window.fetch(
+            "http://$host:8000/translate",
             json(
                 "method" to "POST",
                 "headers" to json("Content-Type" to "application/json"),
                 "body" to JSON.stringify(json("text" to text, "target" to "he"))
-            ).unsafeCast<org.w3c.fetch.RequestInit>()
+            ).unsafeCast<RequestInit>()
         ).await()
 
         val textResponse = response.text().await()

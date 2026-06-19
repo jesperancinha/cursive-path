@@ -9,12 +9,12 @@ kotlin {
 }
 
 application {
-    mainClass.set("BackendKt")
+    mainClass.set("org.jesperancinha.cursive.path.BackendKt")
 }
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "BackendKt"
+        attributes["Main-Class"] = "org.jesperancinha.cursive.path.BackendKt"
     }
     val dependencies = configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
     from(dependencies)

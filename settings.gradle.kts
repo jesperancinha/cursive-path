@@ -1,3 +1,3 @@
-rootProject.name = "translator-app"
+rootProject.name = "cursive-path"
 
 include("shared", "backend", "frontend")
