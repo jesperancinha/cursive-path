@@ -1,6 +1,8 @@
 .PHONY: run build clean run-backend start-backend stop-backend start-frontend stop-frontend stop-all
 build:
+	./gradlew :backend:clean
 	./gradlew :backend:build
+	./gradlew :frontend:clean
 	./gradlew :frontend:jsBrowserProductionWebpack
 run-frontend:
 	./gradlew :frontend:jsBrowserDevelopmentRun
