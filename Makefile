@@ -4,6 +4,7 @@ build:
 	./gradlew :backend:build
 	./gradlew :frontend:clean
 	./gradlew :frontend:jsBrowserProductionWebpack
+	./gradlew :frontend:build
 run-frontend:
 	./gradlew :frontend:jsBrowserDevelopmentRun
 start-frontend:
